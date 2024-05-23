@@ -283,6 +283,24 @@ public class ConfigHandler extends AbstractConfig {
 
     @ConfigProperty(
             category = MWENHANCEMENTS,
+            name = "PHX Heal Level",
+            comment = "Automatically heal squad members if you are the phoenix class\nLevel 0 = Off\nLevel 1 = Subtle\nLevel 2 = Blatant")
+    public static int phxAutoHealLevel = 1;
+
+    @ConfigProperty(
+            category = MWENHANCEMENTS,
+            name = "PHX Heal Time",
+            comment = "How long to wait before healing the target")
+    public static int phxAutoHealTime = 10;
+
+    @ConfigProperty(
+            category = MWENHANCEMENTS,
+            name = "PHX Heal Min HP",
+            comment = "The minimum number of hit points a squadmate can have before the mod considers them a valid heal target")
+    public static int phxAutoHealMinHP = 16;
+
+    @ConfigProperty(
+            category = MWENHANCEMENTS,
             name = "Hide Optifine Hats",
             comment = "Stops rendering the hats added by Optifine")
     public static boolean hideOptifineHats;

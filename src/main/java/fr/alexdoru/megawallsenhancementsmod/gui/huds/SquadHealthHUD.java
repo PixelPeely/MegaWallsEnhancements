@@ -40,6 +40,29 @@ public class SquadHealthHUD extends AbstractRenderer {
         instance = this;
     }
 
+    private int getDistance(EntityPlayer p1, EntityPlayer p2) {
+        return (int)(Math.abs(p1.posX - p2.posX) + /*Math.abs(p1.posY - p2.posY)*/ + Math.abs(p1.posZ - p2.posZ));
+    }
+
+    private void drawArrow(int x, int y, float direction) {
+        int xDisplacement = (int)(Math.cos(direction) * 4);
+        int yDisplacement = (int)(Math.sin(direction) * 4);
+        drawLine(x - xDisplacement, y - yDisplacement, x + xDisplacement, y + yDisplacement, 0xFFFF0000);
+        Gui.drawRect(x + xDisplacement, y + yDisplacement, x + xDisplacement + 1, y + yDisplacement - 1, 0xFFFFFFFF);
+    }
+
+    private void drawLine(int x, int y, int dx, int dy, int color) {
+        if (x == dx) Gui.drawRect(x, Math.max(y, dy), x+1, Math.min(y, dy), color);
+        float step = ((float)(dy-y))/(dx-x);
+        int lastY = y;
+        Gui.drawRect(x, y, x+1, y-1, color);
+        for (int ix = x; dx<x? ix >= dx : ix <= dx; ix += dx<x?-1:1) {
+            int currentY = (int)((ix-x)*step)+y;
+            Gui.drawRect(ix, Math.max(lastY, currentY), ix+1, Math.min(lastY, currentY)-1, color);
+            lastY = currentY;
+        }
+    }
+
     @Override
     public void render(ScaledResolution resolution) {
         final Scoreboard scoreboard = mc.theWorld.getScoreboard();
@@ -61,7 +84,10 @@ public class SquadHealthHUD extends AbstractRenderer {
         int maxNameWidth = 0;
         int maxScoreWidth = 0;
         int maxFinalWidth = 0;
+        int maxDirectionWidth = 0;
+        int maxYOffsetWidth = 0;
         for (final NetworkPlayerInfo networkplayerinfo : playerlistToRender) {
+            EntityPlayer player = mc.theWorld.getPlayerEntityByUUID(networkplayerinfo.getGameProfile().getId());
             maxNameWidth = Math.max(maxNameWidth, mc.fontRendererObj.getStringWidth(this.getPlayerName(networkplayerinfo)));
             if (scoreobjective != null && scoreobjective.getRenderType() != IScoreObjectiveCriteria.EnumRenderType.HEARTS) {
                 maxScoreWidth = Math.max(maxScoreWidth, mc.fontRendererObj.getStringWidth(" " + scoreboard.getValueFromObjective(networkplayerinfo.getGameProfile().getName(), scoreobjective).getScorePoints()));
@@ -72,11 +98,17 @@ public class SquadHealthHUD extends AbstractRenderer {
                     maxFinalWidth = Math.max(maxFinalWidth, mc.fontRendererObj.getStringWidth(" " + playerFinalkills));
                 }
             }
+            if (player != mc.thePlayer && player != null) {
+                final int playerDistance = Math.round(getDistance(player, mc.thePlayer));
+                maxDirectionWidth = Math.max(maxDirectionWidth, mc.fontRendererObj.getStringWidth(" ( " + playerDistance));
+                final int yOffset = (int)(player.posY - mc.thePlayer.posY);
+                maxYOffsetWidth = Math.max(maxYOffsetWidth, mc.fontRendererObj.getStringWidth(yOffset + " )"));
+            }
         }
         GlStateManager.pushMatrix();
         {
             final boolean flag = mc.isIntegratedServerRunning() || mc.getNetHandler().getNetworkManager().getIsencrypted();
-            final int maxLineWidth = (flag ? 9 : 0) + maxNameWidth + maxFinalWidth + maxScoreWidth;
+            final int maxLineWidth = (flag ? 9 : 0) + maxNameWidth + maxFinalWidth + maxScoreWidth + maxDirectionWidth + maxYOffsetWidth + 9;
             final int listSize = playerlistToRender.size();
             final int hudWidth = maxLineWidth + 2;
             final int hudHight = listSize * 9 + 1;
@@ -106,6 +138,8 @@ public class SquadHealthHUD extends AbstractRenderer {
                 mc.fontRendererObj.drawStringWithShadow(this.getPlayerName(networkplayerinfo), (float) xDrawingPos, (float) yDrawingPos, 0xFFFFFF);
                 final int xStartFinalDrawingPos = xDrawingPos + maxNameWidth + 1;
                 final int xStartScoreDrawingPos = xStartFinalDrawingPos + maxFinalWidth;
+                final int xStartDirectionDrawingPos = xStartScoreDrawingPos + maxScoreWidth;
+                final int xStartYOffsetDrawingPos = xStartDirectionDrawingPos + maxDirectionWidth;
                 if (maxScoreWidth + maxFinalWidth > 5) {
                     if (scoreobjective != null && networkplayerinfo.getGameType() != WorldSettings.GameType.SPECTATOR && scoreobjective.getRenderType() != IScoreObjectiveCriteria.EnumRenderType.HEARTS) {
                         final int scorePoints = scoreobjective.getScoreboard().getValueFromObjective(gameprofile.getName(), scoreobjective).getScorePoints();
@@ -119,6 +153,16 @@ public class SquadHealthHUD extends AbstractRenderer {
                             mc.fontRendererObj.drawStringWithShadow(finalsString, xStartFinalDrawingPos, yDrawingPos, 0xFFFFFF);
                         }
                     }
+                }
+                EntityPlayer player = mc.theWorld.getPlayerEntityByUUID(networkplayerinfo.getGameProfile().getId());
+
+                if (player != mc.thePlayer && player != null && !ScoreboardTracker.isPreGameLobby) {
+                    final int distance = getDistance(mc.thePlayer, player);
+                    final String directionString = " (" + EnumChatFormatting.LIGHT_PURPLE + distance;
+                    final String yOffsetString = EnumChatFormatting.GRAY.toString() + Math.round(player.posY - mc.thePlayer.posY) + ")";
+                    mc.fontRendererObj.drawStringWithShadow(directionString, xStartDirectionDrawingPos, yDrawingPos, 0xFFFFFF);
+                    mc.fontRendererObj.drawStringWithShadow(yOffsetString, xStartYOffsetDrawingPos + mc.fontRendererObj.getStringWidth("  "), yDrawingPos, 0xFFFFFF);
+                    drawArrow(xStartYOffsetDrawingPos + mc.fontRendererObj.getCharWidth(' ') / 2, yDrawingPos + 9 / 2, (float) (Math.atan2(mc.thePlayer.posZ - player.posZ, mc.thePlayer.posX - player.posX) - Math.toRadians(mc.thePlayer.rotationYawHead)));
                 }
             }
         }
@@ -141,7 +185,11 @@ public class SquadHealthHUD extends AbstractRenderer {
             final int maxNameWidth = mc.fontRendererObj.getStringWidth(mc.thePlayer.getName());
             final int maxScoreWidth = mc.fontRendererObj.getStringWidth(" 00");
             final int maxFinalWidth = mc.fontRendererObj.getStringWidth(" 0");
-            final int maxLineWidth = maxNameWidth + maxFinalWidth + maxScoreWidth + 9;
+            final String direction1 = " (" + EnumChatFormatting.LIGHT_PURPLE + "13 ";
+            final String direction2 = " " + EnumChatFormatting.GRAY + " -3" + EnumChatFormatting.RESET + ")";
+            final int direction1Width = mc.fontRendererObj.getStringWidth(direction1);
+            final int direction2Width = mc.fontRendererObj.getStringWidth(direction2);
+            final int maxLineWidth = maxNameWidth + maxFinalWidth + maxScoreWidth + direction1Width + direction2Width;
             Gui.drawRect(hudXpos, hudYpos, hudXpos + maxLineWidth + 2, hudYpos + listSize * 9 + 1, Integer.MIN_VALUE);
             for (int i = 0; i < listSize; i++) {
                 int xDrawingPos = hudXpos + 1;
@@ -159,12 +207,17 @@ public class SquadHealthHUD extends AbstractRenderer {
                 mc.fontRendererObj.drawStringWithShadow(formattedName, (float) xDrawingPos, (float) yDrawingPos, -1);
                 final int xStartFinalDrawingPos = xDrawingPos + maxNameWidth + 1;
                 final int xStartScoreDrawingPos = xStartFinalDrawingPos + maxFinalWidth;
+                final int xStartDirection1DrawingPos = xStartScoreDrawingPos + direction1Width;
+                final int xStartDirection2DrawingPos = xStartDirection1DrawingPos + direction2Width;
                 if (maxScoreWidth + maxFinalWidth > 5) {
                     final int scorePoints = 12 + (i * 18 + 22) % 8;
                     final String scoreString = GuiPlayerTabOverlayHook.getColoredHP(scorePoints) + " " + scorePoints;
                     mc.fontRendererObj.drawStringWithShadow(scoreString, xStartScoreDrawingPos, yDrawingPos, 0xFFFFFF);
                     final String finalsString = EnumChatFormatting.GOLD + " " + (3 + (i * 28 + 15) % 5);
                     mc.fontRendererObj.drawStringWithShadow(finalsString, xStartFinalDrawingPos, yDrawingPos, 0xFFFFFF);
+                    mc.fontRendererObj.drawStringWithShadow(direction1 + direction2, xStartDirection1DrawingPos, yDrawingPos, 0xFFFFFF);
+                    drawArrow(xStartDirection2DrawingPos + mc.fontRendererObj.getCharWidth(' ') / 2, yDrawingPos + 9/2, (float)(mc.theWorld.getWorldTime() * Math.PI * 0.01) + i);
+                    //drawArrow(80, 80, (float)(Math.atan2(mc.thePlayer.posZ - 0, mc.thePlayer.posX - 0) - Math.toRadians(mc.thePlayer.rotationYawHead)));
                 }
             }
         }

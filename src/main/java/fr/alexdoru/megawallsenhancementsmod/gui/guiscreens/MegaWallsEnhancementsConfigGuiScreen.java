@@ -11,6 +11,7 @@ import fr.alexdoru.megawallsenhancementsmod.gui.elements.SimpleGuiButton;
 import fr.alexdoru.megawallsenhancementsmod.gui.elements.TextElement;
 import fr.alexdoru.megawallsenhancementsmod.utils.NameUtil;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraftforge.fml.client.config.GuiSlider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,9 @@ import static net.minecraft.util.EnumChatFormatting.*;
 public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
 
     private final GuiScreen parent;
+    private GuiSlider phxHealLevel;
+    private GuiSlider phxHealTime;
+    private GuiSlider phxHealMinHP;
 
     public MegaWallsEnhancementsConfigGuiScreen(GuiScreen parent) {
         this.parent = parent;
@@ -165,6 +169,48 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
                 GRAY + "When adding a player to the squad with a custom name of your choice, using"
                         + YELLOW + " /squad add <name> as <custom name>"
                         + GRAY + ", it will keep the first letter of their real name so that you can track them on the compass"));
+        this.buttonList.add(this.phxHealLevel = new GuiSlider(
+                22,
+                xPosLeft,
+                getButtonYPos(7),
+                BUTTON_WIDTH * 2/3,
+                buttonsHeight,
+                "PHX Heal Level : ",
+                "",
+                0,
+                2,
+                ConfigHandler.phxAutoHealLevel,
+                false,
+                true
+        ));
+        this.buttonList.add(this.phxHealTime = new GuiSlider(
+                23,
+                getxCenter() - (int)(BUTTON_WIDTH * (1.0/3.0)),
+                getButtonYPos(7),
+                BUTTON_WIDTH * 2/3,
+                buttonsHeight,
+                "PHX Heal Time : ",
+                " Ticks",
+                0,
+                20,
+                ConfigHandler.phxAutoHealTime,
+                false,
+                true
+        ));
+        this.buttonList.add(this.phxHealMinHP = new GuiSlider(
+                24,
+                xPosRight + (int)(BUTTON_WIDTH * (1.0/3.0)),
+                getButtonYPos(7),
+                BUTTON_WIDTH * 2/3,
+                buttonsHeight,
+                "PHX Heal Min HP : ",
+                "",
+                0,
+                40,
+                ConfigHandler.phxAutoHealMinHP,
+                false,
+                true
+        ));
         if (!ASMLoadingPlugin.isFeatherLoaded()) {
             final List<String> chatHeadTooltip = new ArrayList<>();
             chatHeadTooltip.add(GREEN + "Chat Heads");
@@ -182,4 +228,11 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
         this.buttonList.add(new SimpleGuiButton(getxCenter() - 150 / 2, getButtonYPos(8), 150, buttonsHeight, "Done", () -> mc.displayGuiScreen(this.parent)));
     }
 
+    @Override
+    public void onGuiClosed() {
+        ConfigHandler.phxAutoHealLevel = this.phxHealLevel.getValueInt();
+        ConfigHandler.phxAutoHealTime = this.phxHealTime.getValueInt();
+        ConfigHandler.phxAutoHealMinHP = this.phxHealMinHP.getValueInt();
+        super.onGuiClosed();
+    }
 }
