@@ -100,11 +100,7 @@ public class MegaWallsClassStats {
         wlr = (float) classname_wins / (classname_losses == 0 ? 1 : (float) classname_losses);
         fkadr = (float) (classname_final_kills + classname_final_assists) / (classname_final_deaths == 0 ? 1 : (float) classname_final_deaths);
 
-        // to compute classpoints
-        final int classname_final_kills_standard = JsonUtil.getInt(megaWallsStatsObj, classname + "_final_kills_standard");
-        classname_final_assists_standard = JsonUtil.getInt(megaWallsStatsObj, classname + "_final_assists_standard");
-        final int classname_wins_standard = JsonUtil.getInt(megaWallsStatsObj, classname + "_wins_standard");
-        classpoints = classname_final_kills_standard + classname_final_assists_standard + classname_wins_standard * 10;
+        classpoints = JsonUtil.getInt(megaWallsStatsObj, classname + "_class_points");
 
         games_played = classname_wins + classname_losses; // doesn't count the draws
         fkpergame = (float) classname_final_kills / (games_played == 0 ? 1 : (float) games_played);
@@ -189,7 +185,7 @@ public class MegaWallsClassStats {
 
                 {
                         EnumChatFormatting.GREEN + "Ability activations : " + EnumChatFormatting.GOLD + ChatUtil.formatInt(classname_a_activations) + " ",
-                        EnumChatFormatting.GREEN + "Ability Damage : " + EnumChatFormatting.GOLD + ChatUtil.formatInt(classname_a_damage_dealt / 2) + EnumChatFormatting.RED + "\u2764",
+                        EnumChatFormatting.GREEN + "Ability Damage : " + EnumChatFormatting.GOLD + ChatUtil.formatInt(classname_a_damage_dealt / 2) + EnumChatFormatting.RED + "❤",
                 },
 
                 {
@@ -198,8 +194,8 @@ public class MegaWallsClassStats {
                 },
 
                 {
-                        EnumChatFormatting.GREEN + "Self healed : " + EnumChatFormatting.GOLD + ChatUtil.formatInt(classname_self_healed / 2) + EnumChatFormatting.RED + "\u2764" + " ",
-                        EnumChatFormatting.GREEN + "Allies healed : " + EnumChatFormatting.GOLD + ChatUtil.formatInt(classname_allies_healed / 2) + EnumChatFormatting.RED + "\u2764",
+                        EnumChatFormatting.GREEN + "Self healed : " + EnumChatFormatting.GOLD + ChatUtil.formatInt(classname_self_healed / 2) + EnumChatFormatting.RED + "❤" + " ",
+                        EnumChatFormatting.GREEN + "Allies healed : " + EnumChatFormatting.GOLD + ChatUtil.formatInt(classname_allies_healed / 2) + EnumChatFormatting.RED + "❤",
                 },
 
                 {
@@ -335,7 +331,7 @@ public class MegaWallsClassStats {
      * - passive 2 level
      * - gathering level
      */
-    public int[] getKitUpgrades () {
+    public int[] getKitUpgrades() {
         return new int[]{
                 skill_level_d,
                 skill_level_a,

@@ -14,10 +14,7 @@ public class ConfigHandler extends AbstractConfig {
 
     protected static void onModUpdate() {
         if (!modVersion.equals(MegaWallsEnhancementsMod.version)) {
-            ConfigHandler.hackerDetector = true;
-            ConfigHandler.autoreportFlaggedPlayers = true;
-            ConfigHandler.showReportHUD = true;
-            ConfigHandler.showReportHUDonlyInChat = false;
+            ConfigHandler.showfkcounterHUD = false;
             ConfigHandler.modVersion = MegaWallsEnhancementsMod.version;
             ConfigHandler.saveConfig();
         }
@@ -39,13 +36,13 @@ public class ConfigHandler extends AbstractConfig {
             category = FKCOUNTER,
             name = "Show FKCounter HUD",
             comment = "Displays the HUD of the final kill counter")
-    public static boolean showfkcounterHUD = true;
+    public static boolean showfkcounterHUD;
 
     @ConfigProperty(
             category = FKCOUNTER,
             name = "Compact FKCounter HUD",
             comment = "Use a compact HUD for the final kill counter")
-    public static boolean fkcounterHUDCompact;
+    public static boolean fkcounterHUDCompact = true;
 
     @ConfigProperty(
             category = FKCOUNTER,
@@ -57,7 +54,7 @@ public class ConfigHandler extends AbstractConfig {
             category = FKCOUNTER,
             name = "HUD in sidebar",
             comment = "Places the fkcounter in the sidebar")
-    public static boolean fkcounterHUDinSidebar;
+    public static boolean fkcounterHUDinSidebar = true;
 
     @ConfigProperty(
             category = FKCOUNTER,
@@ -87,7 +84,7 @@ public class ConfigHandler extends AbstractConfig {
             category = FKCOUNTER,
             name = "Kill diff in Chat",
             comment = "Kill diff in Chat")
-    public static boolean showKillDiffInChat = true;
+    public static boolean showKillDiffInChat;
 
     @ConfigProperty(
             category = MWENHANCEMENTS,
@@ -154,12 +151,6 @@ public class ConfigHandler extends AbstractConfig {
             name = "Max amount of item rendered",
             comment = "Max amount of item rendered")
     public static int maxDroppedEntityRendered = 80;
-
-    @ConfigProperty(
-            category = MWENHANCEMENTS,
-            name = "Prestige V colored Tag",
-            comment = "Prestige V colored Tag")
-    public static boolean prestigeV;
 
     @ConfigProperty(
             category = MWENHANCEMENTS,

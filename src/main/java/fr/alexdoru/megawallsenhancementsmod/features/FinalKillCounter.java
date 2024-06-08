@@ -49,6 +49,14 @@ public class FinalKillCounter {
             "(\\w{1,16}) was killed with a potion by (\\w{1,16}).*",
             "(\\w{1,16}) was killed with an explosion by (\\w{1,16}).*",
             "(\\w{1,16}) was killed with magic by (\\w{1,16}).*",
+            /*Digital messages*/
+            "(\\w{1,16}) was blocked by (\\w{1,16}).*",
+            "(\\w{1,16}) was put into cold storage by (\\w{1,16}).*",
+            "(\\w{1,16}) was deleted by (\\w{1,16}).*",
+            "(\\w{1,16}) was purged by an antivirus owned by (\\w{1,16}).*",
+            "(\\w{1,16}) accidentally closed the game while fighting (\\w{1,16}).*",
+            "(\\w{1,16}) had their computer switched off by (\\w{1,16}).*",
+            "(\\w{1,16}) had their computer fried by (\\w{1,16}).*",
             /*Western messages*/
             "(\\w{1,16}) was filled full of lead by (\\w{1,16}).*",
             "(\\w{1,16}) was iced by (\\w{1,16}).*",
@@ -240,7 +248,7 @@ public class FinalKillCounter {
         if (!ConfigHandler.showKillDiffInChat || killsOfKilledPlayer < 1) {
             return "";
         }
-        return EnumChatFormatting.WHITE + " (" + '\u00a7' + killedTeamColor + "-" + killsOfKilledPlayer + EnumChatFormatting.WHITE + ")";
+        return EnumChatFormatting.WHITE + " (" + '§' + killedTeamColor + "-" + killsOfKilledPlayer + EnumChatFormatting.WHITE + ")";
     }
 
     public static String getGameId() {
@@ -307,7 +315,7 @@ public class FinalKillCounter {
     }
 
     public static void removeKilledPlayer(String player, int team) {
-        removeKilledPlayer(player, getColorPrefixFromTeam(team).replace("\u00a7", ""));
+        removeKilledPlayer(player, getColorPrefixFromTeam(team).replace("§", ""));
     }
 
     /**
@@ -366,7 +374,7 @@ public class FinalKillCounter {
     }
 
     public static String getColorPrefixFromTeam(int team) {
-        return "\u00a7" + prefixes[team];
+        return "§" + prefixes[team];
     }
 
     public static String getTeamNameFromTeam(int team) {

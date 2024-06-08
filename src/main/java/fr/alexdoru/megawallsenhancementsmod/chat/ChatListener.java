@@ -42,14 +42,14 @@ public class ChatListener {
     private static final Pattern COINS_DOUBLED_GUILD_PATTERN = Pattern.compile("^(?:Tokens|Coins) just earned DOUBLED as a Guild Level Reward!$");
     private static final Pattern COINS_PATTERN = Pattern.compile("^\\+\\d+ (tokens|coins)!.*");
     private static final Pattern COINS_BOOSTER_PATTERN = Pattern.compile("^\\+\\d+ (tokens|coins)!( \\([^\\(\\)]*(?:Coins \\+ EXP|Booster)[^\\(\\)]*\\)).*");
-    private static final Pattern DREADLORD_STRENGTH_PATTERN = Pattern.compile("\u00a74\u00a7lSOUL SIPHON \u00a7c\u00a7l85% ([0-9])s");
-    private static final Pattern HEROBRINE_STRENGTH_PATTERN = Pattern.compile("\u00a7e\u00a7lPOWER \u00a7c\u00a7l85% ([0-9])s");
-    private static final Pattern HUNTER_PRE_STRENGTH_PATTERN = Pattern.compile("\u00a7a\u00a7lF\\.O\\.N\\. \u00a77\\(\u00a7l\u00a7c\u00a7lStrength\u00a77\\) \u00a7e\u00a7l([0-9]+)");
-    private static final Pattern CREEPER_FISSION_HEART_PATTERN = Pattern.compile("^\u00a7a\u00a7lFISSION HEART \u00a7c\u00a7l([0-9])s");
+    private static final Pattern DREADLORD_STRENGTH_PATTERN = Pattern.compile("§4§lSOUL SIPHON §c§l85% ([0-9])s");
+    private static final Pattern HEROBRINE_STRENGTH_PATTERN = Pattern.compile("§e§lPOWER §c§l85% ([0-9])s");
+    private static final Pattern HUNTER_PRE_STRENGTH_PATTERN = Pattern.compile("§a§lF\\.O\\.N\\. §7\\(§l§c§lStrength§7\\) §e§l([0-9]+)");
+    private static final Pattern CREEPER_FISSION_HEART_PATTERN = Pattern.compile("^§a§lFISSION HEART §c§l([0-9])s");
     private static final Pattern LOCRAW_PATTERN = Pattern.compile("^\\{\"server\":\"(\\w+)\",\"gametype\":\"\\w+\"(?:|,\"lobbyname\":\"\\w+\")(?:|,\"mode\":\"\\w+\")(?:|,\"map\":\"([a-zA-Z0-9_ ]+)\")\\}$");
     private static final Pattern PLAYER_JOIN_PATTERN = Pattern.compile("^(\\w{1,16}) has joined \\([0-9]{1,3}/[0-9]{1,3}\\)!");
-    private static final Pattern ZOMBIE_STRENGTH_PATTERN = Pattern.compile("\u00a72\u00a7lBERSERK \u00a7c\u00a7l75% ([0-9])s");
-    private static final Pattern MESSAGE_PATTERN = Pattern.compile("^(?:|\\[SHOUT\\] |\\[SPECTATOR\\] )(?:|\\[[A-Z]{3,6}\\] )(?:|\\[((?:MV|VI)P\\+?\\+?)\\] )(\\w{2,16}):.*");
+    private static final Pattern ZOMBIE_STRENGTH_PATTERN = Pattern.compile("§2§lBERSERK §c§l75% ([0-9])s");
+    private static final Pattern MESSAGE_PATTERN = Pattern.compile("^(?:\\[[^\\[\\]]+\\] )*(\\w{2,16}):.*");
     private static final HashSet<String> MW_REPETITVE_MSG = new HashSet<>();
     private static final TimerUtil timerStrength = new TimerUtil(11000L);
     private static boolean addGuildCoinsBonus;
@@ -57,7 +57,7 @@ public class ChatListener {
     static {
         MW_REPETITVE_MSG.add("You broke your protected chest");
         MW_REPETITVE_MSG.add("You broke your protected trapped chest");
-        MW_REPETITVE_MSG.add("Get to the middle to stop the hunger!");
+        MW_REPETITVE_MSG.add("Get to the center to stop the hunger");
         MW_REPETITVE_MSG.add("Your Salvaging skill returned your arrow to you!");
         MW_REPETITVE_MSG.add("Your Efficiency skill got you an extra drop!");
         MW_REPETITVE_MSG.add("Your Soothing Moo Skill is ready!");
@@ -146,12 +146,10 @@ public class ChatListener {
             }
 
             final Matcher matcher = MESSAGE_PATTERN.matcher(msg);
-            //String senderRank = null;
             String messageSender = null;
             String squadname = null;
             if (matcher.matches()) {
-                //senderRank = matcher.group(1);
-                messageSender = matcher.group(2);
+                messageSender = matcher.group(1);
                 squadname = SquadHandler.getSquad().get(messageSender);
             }
 

@@ -3,6 +3,7 @@ package fr.alexdoru.megawallsenhancementsmod.commands;
 import fr.alexdoru.megawallsenhancementsmod.chat.ChatUtil;
 import fr.alexdoru.megawallsenhancementsmod.config.ConfigHandler;
 import fr.alexdoru.megawallsenhancementsmod.features.SquadHandler;
+import fr.alexdoru.megawallsenhancementsmod.scoreboard.ScoreboardTracker;
 import fr.alexdoru.megawallsenhancementsmod.scoreboard.ScoreboardUtils;
 import fr.alexdoru.megawallsenhancementsmod.utils.StringUtil;
 import fr.alexdoru.megawallsenhancementsmod.utils.TabCompletionUtil;
@@ -29,7 +30,7 @@ public class CommandSquad extends MyAbstractCommand {
     public void processCommand(ICommandSender sender, String[] args) {
 
         if (ScoreboardUtils.isPlayingHypixelPit()) {
-            sendChatMessage("/squad ", args);
+            this.sendCommand(args);
             return;
         }
 
@@ -44,7 +45,11 @@ public class CommandSquad extends MyAbstractCommand {
 
         } else if (args[0].equalsIgnoreCase("addteam")) {
 
-            this.addTeamToSquad();
+            if (ScoreboardTracker.isPreGameLobby) {
+                SquadHandler.formSquad();
+            } else {
+                this.addTeamToSquad();
+            }
 
         } else if (args[0].equalsIgnoreCase("formsquad")) {
 
@@ -128,7 +133,7 @@ public class CommandSquad extends MyAbstractCommand {
                 if (ConfigHandler.keepFirstLetterSquadnames) {
                     if (!args[1].isEmpty() && !alias.isEmpty()) {
                         if (args[1].charAt(0) != alias.charAt(0)) {
-                            alias = args[1].charAt(0) + " \u2758 " + alias;
+                            alias = args[1].charAt(0) + " ❘ " + alias;
                         }
                     }
                 }

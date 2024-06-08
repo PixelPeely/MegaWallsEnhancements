@@ -11,17 +11,17 @@ import net.minecraft.client.gui.FontRenderer;
 public class GuiIngameHook {
 
     public static String cancelHungerTitle(String subtitle) {
-        if (ConfigHandler.hideHungerTitleInMW && subtitle.contains("Get to the middle to stop the hunger!")) {
+        if (ConfigHandler.hideHungerTitleInMW && subtitle.contains("Get to the center to stop the hunger")) {
             return "";
         }
         return subtitle;
     }
 
     public static String getSidebarTextLine(String textIn, int lineNumber) {
-        if (ConfigHandler.witherHUDinSidebar && lineNumber == 12 && ConfigHandler.showLastWitherHUD && ScoreboardTracker.isInMwGame && ScoreboardTracker.getParser().isOnlyOneWitherAlive()) {
+        if (ConfigHandler.witherHUDinSidebar && lineNumber == 13 && ConfigHandler.showLastWitherHUD && ScoreboardTracker.isInMwGame && ScoreboardTracker.getParser().isOnlyOneWitherAlive()) {
             return LastWitherHPHUD.instance.displayText;
         }
-        if (ConfigHandler.fkcounterHUDinSidebar && lineNumber == 11 && ConfigHandler.showfkcounterHUD && ScoreboardTracker.isInMwGame && FinalKillCounter.getGameId() != null) {
+        if (ConfigHandler.fkcounterHUDinSidebar && lineNumber == 12 && ConfigHandler.showfkcounterHUD && ScoreboardTracker.isInMwGame && FinalKillCounter.getGameId() != null) {
             return FKCounterHUD.instance.displayText;
         }
         return textIn;

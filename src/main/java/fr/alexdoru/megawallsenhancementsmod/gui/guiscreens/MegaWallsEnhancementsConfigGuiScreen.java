@@ -1,8 +1,6 @@
 package fr.alexdoru.megawallsenhancementsmod.gui.guiscreens;
 
-import fr.alexdoru.megawallsenhancementsmod.api.apikey.HypixelApiKeyUtil;
 import fr.alexdoru.megawallsenhancementsmod.asm.loader.ASMLoadingPlugin;
-import fr.alexdoru.megawallsenhancementsmod.chat.ChatUtil;
 import fr.alexdoru.megawallsenhancementsmod.config.ConfigHandler;
 import fr.alexdoru.megawallsenhancementsmod.features.LeatherArmorManager;
 import fr.alexdoru.megawallsenhancementsmod.gui.elements.FancyGuiButton;
@@ -32,7 +30,7 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
     @Override
     public void initGui() {
         this.maxWidth = BUTTON_WIDTH;
-        this.maxHeight = (buttonsHeight + 4) * 9 + buttonsHeight;
+        this.maxHeight = (buttonsHeight + 4) * 8 + buttonsHeight;
         super.initGui();
         final int xPosLeft = getxCenter() - BUTTON_WIDTH - 10;
         final int xPosRight = getxCenter() + 10;
@@ -42,7 +40,7 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
         repetitiveMsgTooltip.add("");
         repetitiveMsgTooltip.add(GRAY + "Hides the following messages in mega walls :");
         repetitiveMsgTooltip.add("");
-        repetitiveMsgTooltip.add(RED + "Get to the middle to stop the hunger!");
+        repetitiveMsgTooltip.add(RED + "Get to the center to stop the hunger");
         repetitiveMsgTooltip.add(GREEN + "You broke your protected chest");
         repetitiveMsgTooltip.add(GREEN + "You broke your protected trapped chest");
         repetitiveMsgTooltip.add(YELLOW + "Your Salvaging skill returned your arrow to you!");
@@ -64,9 +62,9 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
         final List<String> iconsTooltip = new ArrayList<>();
         iconsTooltip.add(GREEN + "Squad Icon on names");
         iconsTooltip.add("");
-        iconsTooltip.add(DARK_GRAY + "\u25AA " + GREEN + "Enabled" + GRAY + " : displays a squad icon in front of names on nametags and in the tablist");
+        iconsTooltip.add(DARK_GRAY + "▪ " + GREEN + "Enabled" + GRAY + " : displays a squad icon in front of names on nametags and in the tablist");
         iconsTooltip.add("");
-        iconsTooltip.add(DARK_GRAY + "\u25AA " + GREEN + "Tab Only" + GRAY + " : displays a squad icon in front of names in the tablist only");
+        iconsTooltip.add(DARK_GRAY + "▪ " + GREEN + "Tab Only" + GRAY + " : displays a squad icon in front of names in the tablist only");
         iconsTooltip.add("");
         iconsTooltip.add(NameUtil.SQUAD_ICON + GRAY + ": players in your squad");
         this.buttonList.add(new FancyGuiButton(
@@ -84,54 +82,14 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
                     NameUtil.refreshAllNamesInWorld();
                 },
                 iconsTooltip));
-        final List<String> prestige5Tooltip = new ArrayList<>();
-        prestige5Tooltip.add(GREEN + "Prestige 5 tags");
-        prestige5Tooltip.add("");
-        prestige5Tooltip.add(GRAY + "Adds the prestige V colored tags in mega walls.");
-        prestige5Tooltip.add("");
-        prestige5Tooltip.add(GRAY + "You need at least," + GOLD + " 6000 classpoints" + GRAY + ", and a "
-                + RED + "working API Key" + GRAY + ". This will send api requests and store the data in a cache until you close your game.");
-        prestige5Tooltip.add(GRAY + "Type " + YELLOW + "/mwenhancements clearcache" + GRAY + " to force update the data.");
-        prestige5Tooltip.add("");
-        prestige5Tooltip.add(GOLD + "Prestige Colors :");
-        prestige5Tooltip.add(GOLD + " 6000 classpoints : " + AQUA + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 8000 classpoints : " + LIGHT_PURPLE + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 10000 classpoints : " + RED + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 12500 classpoints : " + WHITE + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 15000 classpoints : " + BLUE + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 20000 classpoints : " + YELLOW + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 25000 classpoints : " + DARK_GREEN + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 30000 classpoints : " + DARK_AQUA + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 35000 classpoints : " + DARK_PURPLE + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 40000 classpoints : " + DARK_RED + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 50000 classpoints : " + DARK_GRAY + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 65000 classpoints : " + DARK_BLUE + "[TAG]");
-        prestige5Tooltip.add(GOLD + " 80000 classpoints : " + BLACK + "[TAG]");
-        this.buttonList.add(new FancyGuiButton(
-                xPosLeft, getButtonYPos(4),
-                () -> "Prestige 5 tags : " + getSuffix(ConfigHandler.prestigeV),
-                () -> {
-                    if (ConfigHandler.prestigeV) {
-                        ConfigHandler.prestigeV = false;
-                        NameUtil.refreshAllNamesInWorld();
-                    } else {
-                        if (HypixelApiKeyUtil.apiKeyIsNotSetup()) {
-                            ChatUtil.printApikeySetupInfo();
-                        } else {
-                            ConfigHandler.prestigeV = true;
-                            NameUtil.refreshAllNamesInWorld();
-                        }
-                    }
-                },
-                prestige5Tooltip));
         this.buttonList.add(new OptionGuiButton(
-                xPosLeft, getButtonYPos(5),
+                xPosLeft, getButtonYPos(4),
                 "More strength particules",
                 (b) -> ConfigHandler.strengthParticules = b,
                 () -> ConfigHandler.strengthParticules,
                 GRAY + "Spawns angry villager particles when an herobrine or dreadlord gets strength from a final kill"));
         this.buttonList.add(new FancyGuiButton(
-                xPosLeft, getButtonYPos(6),
+                xPosLeft, getButtonYPos(5),
                 () -> "Colored Leather Armor : " + getSuffix(ConfigHandler.coloredLeatherArmor),
                 () -> {
                     ConfigHandler.coloredLeatherArmor = !ConfigHandler.coloredLeatherArmor;
@@ -144,8 +102,7 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
                 "Renegade arrow count",
                 (b) -> ConfigHandler.renegadeArrowCount = b,
                 () -> ConfigHandler.renegadeArrowCount,
-                GRAY + "Renders above player heads the amount of arrows pinned in each player when playing renegade",
-                YELLOW + "This can have a negative impact on performance, keep it off if you don't play Renegade"));
+                GRAY + "Renders above player heads the amount of arrows pinned in each player when playing renegade"));
         this.buttonList.add(new OptionGuiButton(
                 xPosRight, getButtonYPos(2),
                 "Nick hider",
@@ -225,7 +182,7 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
                     },
                     chatHeadTooltip));
         }
-        this.buttonList.add(new SimpleGuiButton(getxCenter() - 150 / 2, getButtonYPos(8), 150, buttonsHeight, "Done", () -> mc.displayGuiScreen(this.parent)));
+        this.buttonList.add(new SimpleGuiButton(getxCenter() - 150 / 2, getButtonYPos(7), 150, buttonsHeight, "Done", () -> mc.displayGuiScreen(this.parent)));
     }
 
     @Override

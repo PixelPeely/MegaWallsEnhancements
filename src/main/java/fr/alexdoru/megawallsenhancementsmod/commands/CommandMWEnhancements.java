@@ -3,11 +3,9 @@ package fr.alexdoru.megawallsenhancementsmod.commands;
 import fr.alexdoru.megawallsenhancementsmod.api.apikey.HypixelApiKeyUtil;
 import fr.alexdoru.megawallsenhancementsmod.chat.ChatUtil;
 import fr.alexdoru.megawallsenhancementsmod.config.ConfigHandler;
-import fr.alexdoru.megawallsenhancementsmod.data.PrestigeVCache;
 import fr.alexdoru.megawallsenhancementsmod.gui.guiscreens.GeneralConfigGuiScreen;
 import fr.alexdoru.megawallsenhancementsmod.scoreboard.ScoreboardUtils;
 import fr.alexdoru.megawallsenhancementsmod.utils.DelayedTask;
-import fr.alexdoru.megawallsenhancementsmod.utils.NameUtil;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
@@ -35,15 +33,10 @@ public class CommandMWEnhancements extends MyAbstractCommand {
                 HypixelApiKeyUtil.setApiKey(args[1]);
             }
             return;
-        } else if (args.length >= 1 && args[0].equalsIgnoreCase("clearcache")) {
-            PrestigeVCache.clearCache();
-            ChatUtil.addChatMessage(ChatUtil.getTagMW() + EnumChatFormatting.GREEN + "Cleared " + EnumChatFormatting.GOLD + "Prestige V" + EnumChatFormatting.GREEN + " data Cache");
-            NameUtil.refreshAllNamesInWorld();
-            return;
         } else if (args.length >= 1 && args[0].equalsIgnoreCase("howplaygame")) {
             final String title = ScoreboardUtils.getUnformattedSidebarTitle();
             if (title != null && title.contains("MEGA WALLS")) {
-                final String msg1 = "During the first 6 minutes you have to mine iron, make armor and store everything in your enderchest";
+                final String msg1 = "During the first 7 minutes you have to mine iron, make armor and store everything in your enderchest";
                 final String msg2 = "Once the walls fall down you can go to mid and fight other players, each class has unique abilities";
                 final String msg3 = "Every team has a wither, you have to protect yours and kill the withers from the other teams";
                 final String msg4 = "Once a wither is dead the players from that team can't respawn, be the last team standing to win";
@@ -63,7 +56,7 @@ public class CommandMWEnhancements extends MyAbstractCommand {
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-        final String[] possibilities = {"clearcache", "howplaygame", "refreshconfig", "setapikey"};
+        final String[] possibilities = {"howplaygame", "refreshconfig", "setapikey"};
         return getListOfStringsMatchingLastWord(args, possibilities);
     }
 

@@ -20,10 +20,10 @@ public class ScoreboardParser {
     private static final Pattern GATES_OPEN_PATTERN = Pattern.compile("Gates Open: \\d+:\\d+");
     private static final Pattern WALLS_FALL_PATTERN = Pattern.compile("Walls Fall: (\\d+):(\\d+)");
     private static final Pattern MW_TITLE_PATTERN = Pattern.compile("MEGA\\sWALLS");
-    private static final Pattern MW_INGAME_PATTERN = Pattern.compile("[0-9]+\\sFinals?\\s[0-9]+\\sF\\.\\sAssists?");
+    private static final Pattern MW_INGAME_PATTERN = Pattern.compile("[0-9]+\\sF\\.\\sKills?\\s[0-9]+\\sF\\.\\sAssists?");
     private static final Pattern PREGAME_LOBBY_PATTERN = Pattern.compile("Players:\\s*[0-9]+/[0-9]+");
     private static final Pattern WITHER_ALIVE_PATTERN = Pattern.compile("\\[[BGRY]\\] Wither HP: ?(\\d+)");
-    private static final Pattern WITHER_ALIVE_HEART_PATTERN = Pattern.compile("\\[[BGRY]\\] Wither [\u2764\u2665]: ?(\\d+)");
+    private static final Pattern WITHER_ALIVE_HEART_PATTERN = Pattern.compile("\\[[BGRY]\\] Wither [❤♥]: ?(\\d+)");
     private static final Pattern REPLAY_MAP_PATTERN = Pattern.compile("Map: ([a-zA-Z0-9_ ]+)");
 
     private static boolean triggeredWallsFallAlert = false;

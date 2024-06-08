@@ -8,7 +8,6 @@ import fr.alexdoru.megawallsenhancementsmod.chat.ChatHandler;
 import fr.alexdoru.megawallsenhancementsmod.config.ConfigHandler;
 import fr.alexdoru.megawallsenhancementsmod.data.AliasData;
 import fr.alexdoru.megawallsenhancementsmod.data.MWPlayerData;
-import fr.alexdoru.megawallsenhancementsmod.data.PrestigeVCache;
 import fr.alexdoru.megawallsenhancementsmod.data.ScangameData;
 import fr.alexdoru.megawallsenhancementsmod.enums.MWClass;
 import fr.alexdoru.megawallsenhancementsmod.features.LeatherArmorManager;
@@ -29,12 +28,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -66,16 +60,15 @@ import java.util.regex.Pattern;
 public class NameUtil {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
-    public static final String WARNING_ICON = EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "\u26a0 " + EnumChatFormatting.RESET;
-    public static final String RED_WARNING_ICON = EnumChatFormatting.DARK_RED.toString() + EnumChatFormatting.BOLD + "\u26a0 " + EnumChatFormatting.RESET;
-    public static final String PINK_WARNING_ICON = EnumChatFormatting.LIGHT_PURPLE.toString() + EnumChatFormatting.BOLD + "\u26a0 " + EnumChatFormatting.RESET;
+    public static final String WARNING_ICON = EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD + "⚠ " + EnumChatFormatting.RESET;
+    public static final String RED_WARNING_ICON = EnumChatFormatting.DARK_RED.toString() + EnumChatFormatting.BOLD + "⚠ " + EnumChatFormatting.RESET;
+    public static final String PINK_WARNING_ICON = EnumChatFormatting.LIGHT_PURPLE.toString() + EnumChatFormatting.BOLD + "⚠ " + EnumChatFormatting.RESET;
     public static final String SQUAD_ICON = EnumChatFormatting.GOLD + "[" + EnumChatFormatting.DARK_GREEN + "S" + EnumChatFormatting.GOLD + "] " + EnumChatFormatting.RESET;
     private static final IChatComponent IWARNING_ICON = new ChatComponentText(WARNING_ICON);
     private static final IChatComponent IRED_WARNING_ICON = new ChatComponentText(RED_WARNING_ICON);
     private static final IChatComponent IPINK_WARNING_ICON = new ChatComponentText(PINK_WARNING_ICON);
     private static final IChatComponent ISQUAD_ICON = new ChatComponentText(SQUAD_ICON);
     private static final List<IChatComponent> ALL_ICONS_LIST = Arrays.asList(IWARNING_ICON, IRED_WARNING_ICON, IPINK_WARNING_ICON, ISQUAD_ICON);
-    private static final Pattern PATTERN_CLASS_TAG = Pattern.compile("\\[([A-Z]{3})\\]");
     private static final Set<UUID> warningMsgPrinted = new HashSet<>();
 
     /**
@@ -89,7 +82,7 @@ public class NameUtil {
         if (isValidMinecraftName(playername)) {
             final NetworkPlayerInfo networkPlayerInfo = NetHandlerPlayClientHook.getPlayerInfo(playername);
             if (networkPlayerInfo != null) {
-                ((NetworkPlayerInfoAccessor) networkPlayerInfo).setCustomDisplayname(fetchMWPlayerData(networkPlayerInfo.getGameProfile(), true).displayName);
+                ((NetworkPlayerInfoAccessor) networkPlayerInfo).setCustomDisplayname(getMWPlayerData(networkPlayerInfo.getGameProfile(), true).displayName);
             }
             final EntityPlayer player = mc.theWorld.getPlayerEntityByName(playername);
             if (player != null) {
@@ -104,7 +97,7 @@ public class NameUtil {
     public static void updateMWPlayerDataAndEntityData(EntityPlayer player, boolean refreshDisplayName) {
         final NetworkPlayerInfo networkPlayerInfo = NetHandlerPlayClientHook.getPlayerInfo(player.getName());
         if (networkPlayerInfo != null) {
-            ((NetworkPlayerInfoAccessor) networkPlayerInfo).setCustomDisplayname(fetchMWPlayerData(networkPlayerInfo.getGameProfile(), true).displayName);
+            ((NetworkPlayerInfoAccessor) networkPlayerInfo).setCustomDisplayname(getMWPlayerData(networkPlayerInfo.getGameProfile(), true).displayName);
         }
         updateEntityPlayerFields(player, false);
         if (refreshDisplayName) {
@@ -116,7 +109,7 @@ public class NameUtil {
      * This updates the infos storred in GameProfile.MWPlayerData and refreshes the name in the tablist and the nametag
      */
     public static void updateMWPlayerDataAndEntityData(NetworkPlayerInfo networkPlayerInfo, boolean refreshDisplayName) {
-        ((NetworkPlayerInfoAccessor) networkPlayerInfo).setCustomDisplayname(fetchMWPlayerData(networkPlayerInfo.getGameProfile(), true).displayName);
+        ((NetworkPlayerInfoAccessor) networkPlayerInfo).setCustomDisplayname(getMWPlayerData(networkPlayerInfo.getGameProfile(), true).displayName);
         final EntityPlayer player = mc.theWorld.getPlayerEntityByName(networkPlayerInfo.getGameProfile().getName());
         if (player != null) {
             updateEntityPlayerFields(player, false);
@@ -143,7 +136,7 @@ public class NameUtil {
         if (isValidMinecraftName(playername)) {
             final NetworkPlayerInfo networkPlayerInfo = NetHandlerPlayClientHook.getPlayerInfo(playername);
             if (networkPlayerInfo != null) {
-                final MWPlayerData.PlayerData mwPlayerData = fetchMWPlayerData(networkPlayerInfo.getGameProfile(), true);
+                final MWPlayerData.PlayerData mwPlayerData = getMWPlayerData(networkPlayerInfo.getGameProfile(), true);
                 ((NetworkPlayerInfoAccessor) networkPlayerInfo).setCustomDisplayname(mwPlayerData.displayName);
                 if (mc.theWorld != null) {
                     final EntityPlayer player;
@@ -178,8 +171,6 @@ public class NameUtil {
         }
 
         final EntityPlayerAccessor playerAccessor = (EntityPlayerAccessor) player;
-        playerAccessor.setPrestige4Tag(mwPlayerData.originalP4Tag);
-        playerAccessor.setPrestige5Tag(mwPlayerData.P5Tag);
 
         final int oldColor = playerAccessor.getPlayerTeamColorInt();
         playerAccessor.setPlayerTeamColor(mwPlayerData.teamColor);
@@ -234,7 +225,7 @@ public class NameUtil {
      * a rerun all the code in the method to generate the MWPlayerData instance
      */
     @Nonnull
-    public static MWPlayerData.PlayerData fetchMWPlayerData(GameProfile gameProfileIn, boolean forceRefresh) {
+    public static MWPlayerData.PlayerData getMWPlayerData(GameProfile gameProfileIn, boolean forceRefresh) {
 
         final UUID id = gameProfileIn.getId();
         MWPlayerData.PlayerData mwPlayerData = MWPlayerData.get(id);
@@ -276,38 +267,25 @@ public class NameUtil {
         }
 
         IChatComponent displayName = null;
-        String formattedPrestigeVstring = null;
-        String colorSuffix = null;
         char teamColor = '\0';
         MWClass mwClass = null;
         if (mc.theWorld != null) {
             final ScorePlayerTeam team = mc.theWorld.getScoreboard().getPlayersTeam(username);
             if (team != null) {
                 final String teamprefix = team.getColorPrefix();
-                colorSuffix = team.getColorSuffix();
+                final String colorSuffix = team.getColorSuffix();
                 teamColor = StringUtil.getLastColorCharOf(teamprefix);
                 mwClass = MWClass.fromTeamTag(ScoreboardTracker.isMWReplay ? teamprefix : colorSuffix);
-                if (ConfigHandler.prestigeV && colorSuffix.contains(EnumChatFormatting.GOLD.toString())) {
-                    final Matcher matcher = PATTERN_CLASS_TAG.matcher(colorSuffix);
-                    if (matcher.find()) {
-                        final String tag = matcher.group(1);
-                        final EnumChatFormatting prestigeVcolor = PrestigeVCache.checkCacheAndUpdate(uuid, gameProfileIn.getName(), tag);
-                        if (prestigeVcolor != null) {
-                            formattedPrestigeVstring = " " + prestigeVcolor + "[" + tag + "]";
-                        }
-                    }
-                }
-                final boolean isobf = teamprefix.contains("\u00a7k");
+                final boolean isobf = teamprefix.contains(EnumChatFormatting.OBFUSCATED.toString());
                 final boolean isNicked = id.version() == 1;
                 final String alias = AliasData.getAlias(isNicked ? username : uuid);
-                if (iExtraPrefix != null || isSquadMate || formattedPrestigeVstring != null || alias != null) {
+                if (iExtraPrefix != null || isSquadMate || alias != null) {
                     displayName = new ChatComponentText(
                             (isobf ? "" : extraPrefix)
                                     + teamprefix
                                     + (isSquadMate ? squadname : username)
-                                    + (formattedPrestigeVstring != null ? formattedPrestigeVstring : colorSuffix)
-                                    + (isobf || alias == null ? "" : EnumChatFormatting.RESET + " (" + EnumChatFormatting.GOLD + alias + EnumChatFormatting.RESET + ")")
-                    );
+                                    + colorSuffix
+                                    + (isobf || alias == null ? "" : EnumChatFormatting.RESET + " (" + EnumChatFormatting.GOLD + alias + EnumChatFormatting.RESET + ")"));
                 }
             } else if (mc.thePlayer != null && mc.thePlayer.getName().equals(username)) {
                 if (!ConfigHandler.hypixelNick.isEmpty()) {
@@ -320,16 +298,16 @@ public class NameUtil {
         }
 
         if (mwPlayerData == null) {
-            mwPlayerData = new MWPlayerData.PlayerData(id, wdr, iExtraPrefix, squadname, displayName, colorSuffix, formattedPrestigeVstring, teamColor, mwClass);
+            mwPlayerData = new MWPlayerData.PlayerData(id, wdr, iExtraPrefix, squadname, displayName, teamColor, mwClass);
         } else {
-            mwPlayerData.setData(wdr, iExtraPrefix, squadname, displayName, colorSuffix, formattedPrestigeVstring, teamColor, mwClass);
+            mwPlayerData.setData(wdr, iExtraPrefix, squadname, displayName, teamColor, mwClass);
         }
 
         return mwPlayerData;
 
     }
 
-    private static final Pattern obfPattern = Pattern.compile("\u00a7k[OX]*");
+    private static final Pattern obfPattern = Pattern.compile("§k[OX]*");
 
     private static String deobfString(String obfText) {
         return obfPattern.matcher(obfText).replaceAll("");
@@ -375,10 +353,6 @@ public class NameUtil {
      * This doesn't return the icons in front that the player may have.
      */
     public static String getFormattedNameWithoutIcons(NetworkPlayerInfo networkPlayerInfo) {
-        final MWPlayerData.PlayerData mwPlayerData = MWPlayerData.get(networkPlayerInfo.getGameProfile().getId());
-        if (mwPlayerData != null && mwPlayerData.P5Tag != null && mwPlayerData.originalP4Tag != null) {
-            return formatPlayerNameUnscrambled(networkPlayerInfo.getPlayerTeam(), networkPlayerInfo.getGameProfile().getName()).replace(mwPlayerData.originalP4Tag, mwPlayerData.P5Tag);
-        }
         return formatPlayerNameUnscrambled(networkPlayerInfo.getPlayerTeam(), networkPlayerInfo.getGameProfile().getName());
     }
 
