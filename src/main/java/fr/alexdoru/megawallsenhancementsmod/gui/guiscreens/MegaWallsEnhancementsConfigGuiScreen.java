@@ -129,7 +129,7 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
         this.buttonList.add(this.phxHealLevel = new GuiSlider(
                 22,
                 xPosLeft,
-                getButtonYPos(7),
+                getButtonYPos(6),
                 BUTTON_WIDTH * 2/3,
                 buttonsHeight,
                 "PHX Heal Level : ",
@@ -143,7 +143,7 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
         this.buttonList.add(this.phxHealTime = new GuiSlider(
                 23,
                 getxCenter() - (int)(BUTTON_WIDTH * (1.0/3.0)),
-                getButtonYPos(7),
+                getButtonYPos(6),
                 BUTTON_WIDTH * 2/3,
                 buttonsHeight,
                 "PHX Heal Time : ",
@@ -157,7 +157,7 @@ public class MegaWallsEnhancementsConfigGuiScreen extends MyGuiScreen {
         this.buttonList.add(this.phxHealMinHP = new GuiSlider(
                 24,
                 xPosRight + (int)(BUTTON_WIDTH * (1.0/3.0)),
-                getButtonYPos(7),
+                getButtonYPos(6),
                 BUTTON_WIDTH * 2/3,
                 buttonsHeight,
                 "PHX Heal Min HP : ",

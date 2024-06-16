@@ -13,8 +13,11 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.util.*;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.Sys;
+import sun.security.krb5.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,23 @@ public class PHXAutoHeal {
     private int cooldown = 0;
     private int timer = -1;
     private EntityPlayer target = null;
+
+    private void d_dumpToChat() {
+        if (mc.thePlayer == null) return;
+        ChatUtil.addChatMessage(
+                "PHXAutoHeal Dump:" +
+                    "\nreadyToHeal()" + readyToHeal() +
+                        "\n=>(1,!=0):" + ConfigHandler.phxAutoHealLevel +
+                        "\n=>(2,==100):" + mc.thePlayer.experienceLevel +
+                        "\n=>(3,==0):" + cooldown +
+                        "\n=>(4,>1):" + SquadHandler.getSquad().size() +
+                        "\n=>(5,[PHX in):" + EnumChatFormatting.getTextWithoutFormattingCodes(mc.thePlayer.getDisplayName().getFormattedText()) +
+                        "\n=>(6,!=-1):" + getItemByNameContents("Sword") +
+                    "\ntimer:" + timer +
+                    "\ntarget?:" + (target != null) +
+                    "\nsquad size:" + SquadHandler.getSquad().size()
+        );
+    }
 
     private double manhattanDistance(Vec3 a, Vec3 b) {
         return Math.abs(Math.abs(a.xCoord - b.xCoord) + Math.abs(a.yCoord - b.yCoord) + Math.abs(a.zCoord - b.zCoord));
@@ -45,11 +65,12 @@ public class PHXAutoHeal {
                 && mc.thePlayer.experienceLevel == 100
                 && cooldown == 0
                 && SquadHandler.getSquad().size() > 1
-                && mc.thePlayer.getDisplayName().getFormattedText().contains("[PHX]")
+                //&& EnumChatFormatting.getTextWithoutFormattingCodes(mc.thePlayer.getDisplayName().getFormattedText()).contains("[PHX")
                 && getItemByNameContents("Sword") != -1;
     }
 
     private void healPlayer(EntityPlayer target, int slotWithSword) {
+        ChatUtil.addChatMessage("HealPlayer");
         EntityPlayerSP player = mc.thePlayer;
         float initialYaw = player.rotationYawHead;
         float initialPitch = player.cameraPitch;
@@ -90,12 +111,14 @@ public class PHXAutoHeal {
 
     @SubscribeEvent
     public void tick(TickEvent.ClientTickEvent event) {
+        //d_dumpToChat();
         if (mc.thePlayer == null || !readyToHeal()) {
             if (cooldown > 0)
                 cooldown--;
             return;
         }
         if (timer > -1) {
+            ChatUtil.addChatMessage("Timer " + timer);
             if (target != null)
                 healPlayer(target, getItemByNameContents("Sword"));
             else
@@ -114,9 +137,9 @@ public class PHXAutoHeal {
         }
 
         for (EntityPlayer player : players) {
-            if (player.getHealth() > 8
+            if (player.getHealth() > ConfigHandler.phxAutoHealMinHP
                 || player == mc.thePlayer
-                || player.getDisplayName().getFormattedText().contains("[PHX]")
+                || EnumChatFormatting.getTextWithoutFormattingCodes(player.getDisplayName().getFormattedText()).contains("[PHX")
                 || manhattanDistance(mc.thePlayer.getPositionVector(), player.getPositionVector()) > 14)
                 continue;
             timer = ConfigHandler.phxAutoHealLevel == 1 ? ConfigHandler.phxAutoHealTime : 0;
